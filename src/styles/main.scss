@@ -1,0 +1,110 @@
+body.red {
+  background-color: #990000;
+  background-image: url('/src/img/—Pngtree—casino\ vector\ download_6044865.png');
+  background-position: top;
+  background-size: 50%;
+  background-repeat: no-repeat;
+  color: aliceblue;
+}
+
+#loader {
+  width: 200px;
+  height: 200px;
+  margin: 0;
+  position: fixed;
+  top: calc(50% - 100px);
+  left: calc(50% - 100px);
+  opacity: 1;
+  -webkit-animation: spin 4s linear infinite;
+  -moz-animation: spin 4s linear infinite;
+  animation: spin 4s linear infinite;
+  transition: 2s;
+  &.none {
+    opacity: 0;
+    width: 2000px;
+    height: 2000px;
+    top: calc(50% - 1000px);
+    left: calc(50% - 1000px);
+    transition: 2s;
+  }
+  &.mini {
+    width: 40px;
+    height: 40px;
+    position: relative;
+    top: 0;
+    left: 0;
+    background-image: url('/src/img/roulette.png');
+    background-position: center;
+    background-size: cover;
+    background-repeat: no-repeat;
+  }
+}
+
+.toast {
+  position: absolute;
+  bottom: 15px;
+  left: 15px;
+  color: #262626;
+}
+.ml-10 {
+  margin-left: 10px !important;
+}
+.mr-10 {
+  margin-right: 10px !important;
+}
+.pull-left {
+  float: left;
+}
+.both {
+  clear: both;
+}
+@-moz-keyframes spin {
+  100% {
+    -moz-transform: rotate(360deg);
+  }
+}
+@-webkit-keyframes spin {
+  100% {
+    -webkit-transform: rotate(360deg);
+  }
+}
+@keyframes spin {
+  100% {
+    -webkit-transform: rotate(360deg);
+    transform: rotate(360deg);
+  }
+}
+
+.registration-form {
+  width: 600px;
+  height: auto;
+  margin: 0;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  border: 10px solid green;
+  border-radius: 20px;
+  padding: 20px;
+  background: #990000;
+  overflow: hidden;
+  h2 {
+    text-align: center;
+  }
+  form {
+    width: 1110px;
+    position: relative;
+    transition: all 1s ease;
+    &.second {
+      transform: translate(-570px, 0);
+    }
+    .second-form,
+    .first-form {
+      width: 540px;
+      float: left;
+    }
+    .first-form {
+      margin-right: 30px;
+    }
+  }
+}
