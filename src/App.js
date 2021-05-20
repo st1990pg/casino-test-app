@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import RegistrationPage from 'Pages/RegistrationPage';
-import LoaderMain from 'Components/LoaderMain';
+import RegistrationPage from './pages/RegistrationPage';
+import { makeStyles } from '@material-ui/core/styles';
+import Paper from '@material-ui/core/Paper';
+import Grid from '@material-ui/core/Grid';
 import { LanguageContext } from './contexts/language.context';
 import TranslateProvider from './i18n/provired';
 import LOCALES from './i18n/locales';
@@ -12,10 +14,23 @@ import {
   DropdownItem,
 } from 'reactstrap';
 
+const useStyles = makeStyles((theme) => ({
+  root: {
+    flexGrow: 1,
+  },
+  paper: {
+    padding: theme.spacing(2),
+    textAlign: 'center',
+    color: theme.palette.text.secondary,
+  },
+}));
+
 const App = () => {
   const [loader, setLoader] = useState(true);
   const [language, setLanguage] = useState(LOCALES.ENGLISH);
   const [dropdownOpen, setDropdownOpen] = useState(false);
+
+  const classes = useStyles();
 
   const toggle = () => setDropdownOpen((prevState) => !prevState);
   useEffect(() => {
@@ -40,13 +55,24 @@ const App = () => {
       </Dropdown>
       <LanguageContext.Provider value={{ language, setLanguage }}>
         <TranslateProvider locale={language}>
-          <h1>
-            <FormattedMessage id="HELLO" />
-          </h1>
-          {!loader && <RegistrationPage />}
+          <div className="p-10">
+            <div className={classes.root}>
+              <Grid container spacing={3} className="mt-30">
+                <Grid item sm={false} md={6}></Grid>
+                <Grid item sm={12} md={6}>
+                  <h1 className="white center bold">
+                    <FormattedMessage id="WELCOME" />
+                  </h1>
+                  <Paper className={classes.paper} elevation={3}>
+                    <RegistrationPage />
+                  </Paper>
+                </Grid>
+              </Grid>
+            </div>
+          </div>
         </TranslateProvider>
       </LanguageContext.Provider>
-      <LoaderMain display={loader} />
+      {/* <LoaderMain display={loader} /> */}
     </div>
   );
 };

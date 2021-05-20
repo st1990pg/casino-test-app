@@ -1,12 +1,14 @@
 import React from 'react';
 
+let strongPassword =
+  /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{8,})/;
+
 export const checkInputs = async (obj) => {
   let error = await {};
   await Object.entries(obj).forEach(([key, value]) => {
-    console.log(key, value);
     if (key) {
       let dataStruc = sampleDataStructure.find((item) => item.code === key);
-      // console.log(dataStruc);
+
       if (dataStruc) {
         switch (key) {
           case 'fname':
@@ -20,34 +22,34 @@ export const checkInputs = async (obj) => {
                   item.key === 'minLength' &&
                   value.length < item.parameters.targetLength
                 ) {
-                  error[key] = item.description;
+                  error[key] = item;
                 } else if (
                   item.key === 'maxLength' &&
                   value.length > item.parameters.targetLength
                 ) {
-                  error[key] = item.description;
+                  error[key] = item;
                 } else if (
                   item.key === 'emailValidator' &&
                   (!value || !validateEmail(value) || value.length < 5)
                 ) {
-                  error[key] = item.description;
+                  error[key] = item.invalid_message;
                 }
               });
             }
             break;
           case 'password':
-            if (!value || value.length < 1) {
+            if (!value || value.length < 1 || !strongPassword.test(value)) {
               error[key] = {};
               error[key].code = 'error';
-              error[key].message = 'Missing password!';
+              error[key].message = 'password_strength_failed';
             }
             break;
           case 'password_confirm':
             if (!value || value.length < 1 || value !== obj.password) {
-              error[key] = 'Confirm Password is not ok!';
+              error[key] = 'password_confirm_failed';
             }
           default:
-            console.log('');
+            return;
         }
       }
     }
@@ -62,13 +64,10 @@ export const checkInputs = async (obj) => {
 //Object.entries(obj).forEach(([key, value]) => console.log(`${key}: ${value}`));
 
 export const checkPassword = (value) => {
-  let strongPassword =
-    /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{8,})/;
-
   if (strongPassword.test(value)) {
-    return { code: 'strong', message: 'Pasword is strong!' };
+    return { code: 'strong', message: 'password_is_strong' };
   } else {
-    return { code: 'error', message: 'Pasword is not correct!' };
+    return { code: 'error', message: 'password_strength_failed' };
   }
 };
 
@@ -243,7 +242,7 @@ let sampleDataStructure = [
       {
         key: 'passwordStrength',
         name: 'passwordStrength',
-        invalid_message: 'password_strength_failed',
+        invalid_message: 'password_confirm_failed',
         description: '',
         parameters: {
           regex: '^(?=.*\\d)(?=.*[!@#$%^&*])(?=.*[a-z])(?=.*[A-Z]).{8,16}$',

@@ -3,123 +3,184 @@ import {
   Form,
   FormGroup,
   Label,
-  Input,
   FormFeedback,
   FormText,
   Button,
 } from 'reactstrap';
-import { FormattedMessage } from 'react-intl';
-import Loader from './Loader';
+import { FormattedMessage, useIntl } from 'react-intl';
+import { makeStyles } from '@material-ui/core/styles';
+import TextField from '@material-ui/core/TextField';
+import IconButton from '@material-ui/core/IconButton';
+import Input from '@material-ui/core/Input';
+import FilledInput from '@material-ui/core/FilledInput';
+import OutlinedInput from '@material-ui/core/OutlinedInput';
+import InputLabel from '@material-ui/core/InputLabel';
+import InputAdornment from '@material-ui/core/InputAdornment';
+import FormHelperText from '@material-ui/core/FormHelperText';
+import FormControl from '@material-ui/core/FormControl';
+import Visibility from '@material-ui/icons/Visibility';
+import VisibilityOff from '@material-ui/icons/VisibilityOff';
+import InfoIcon from '@material-ui/icons/Info';
+const useStyles = makeStyles((theme) => ({
+  root: {
+    margin: theme.spacing(1),
+  },
+}));
 
 const SecondForm = (props) => {
-  const [condition, setCondition] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const classes = useStyles();
+  const intl = useIntl();
+
   return (
     <div className="second-form">
-      <FormGroup>
-        <Label for="username">
-          <FormattedMessage id="USERNAME" />
-        </Label>
-        <Input
-          type="text"
-          value={props.user.username}
-          onChange={props.handleChange}
-          name="username"
-          invalid={props.error.username}
-        />
-        <FormFeedback>{props.error.username}</FormFeedback>
-      </FormGroup>
+      <TextField
+        key="username"
+        type="text"
+        error={props.error && props.error.username ? true : false}
+        value={props.user.username}
+        onChange={props.handleChange}
+        name="username"
+        label={intl.formatMessage({ id: 'USERNAME' })}
+        fullWidth={true}
+        helperText={
+          props.error.username
+            ? intl.formatMessage(
+                { id: `${props.error.username.invalid_message}` },
+                { number: props.error.username.parameters.targetLength }
+              )
+            : ' '
+        }
+      />
 
-      <FormGroup>
-        <Label for="email">
-          <FormattedMessage id="EMAIL" />
-        </Label>
-        <Input
-          type="email"
-          value={props.user.email}
-          onChange={props.handleChange}
-          name="email"
-          invalid={props.error.email}
-        />
-        <FormFeedback>{props.error.email}</FormFeedback>
-      </FormGroup>
+      <TextField
+        key="email"
+        type="text"
+        error={props.error && props.error.email ? true : false}
+        value={props.user.email}
+        onChange={props.handleChange}
+        name="email"
+        label={intl.formatMessage({ id: 'EMAIL' })}
+        fullWidth={true}
+        helperText={
+          props.error.email
+            ? intl.formatMessage({ id: `${props.error.email}` })
+            : ' '
+        }
+      />
 
-      <FormGroup>
-        <Label for="password">
-          <FormattedMessage id="PASSWORD" />
-        </Label>
+      <FormControl fullWidth={true}>
+        <InputLabel
+          className={
+            props.error.password && props.error.password.code === 'strong'
+              ? 'green'
+              : ''
+          }
+          error={
+            props.error &&
+            props.error.password &&
+            props.error.password.code === 'error'
+              ? true
+              : false
+          }
+          htmlFor="standard-adornment-password"
+        >
+          Password
+        </InputLabel>
         <Input
           type={showPassword ? 'text' : 'password'}
           value={props.user.password}
           onChange={props.handleChange}
           name="password"
-          invalid={
-            typeof props.error.password === 'object' &&
-            props.error.password.code === 'error'
+          className={
+            props.error.password && props.error.password.code === 'strong'
+              ? 'green'
+              : ''
           }
-          valid={
-            typeof props.error.password === 'object' &&
-            props.error.password.code === 'strong'
+          error={
+            props.error &&
+            props.error.password &&
+            props.error.password.code === 'error'
+              ? true
+              : false
+          }
+          endAdornment={
+            <InputAdornment position="end">
+              <IconButton
+                onClick={() => {
+                  setShowPassword(!showPassword);
+                }}
+              >
+                {showPassword ? <Visibility /> : <VisibilityOff />}
+              </IconButton>
+            </InputAdornment>
           }
         />
-        <FormFeedback>
-          {props.error.password && props.error.password.message}
-        </FormFeedback>
-        <FormFeedback valid>
-          {props.error.password && props.error.password.message}
-        </FormFeedback>
-      </FormGroup>
+        {props.error.password && props.error.password.message ? (
+          <FormHelperText
+            error={
+              props.error &&
+              props.error.password &&
+              props.error.password.code === 'error'
+                ? true
+                : false
+            }
+            className={
+              props.error.password && props.error.password.code === 'strong'
+                ? 'green'
+                : ''
+            }
+          >
+            {intl.formatMessage({ id: `${props.error.password.message}` })}
+          </FormHelperText>
+        ) : (
+          <FormHelperText> </FormHelperText>
+        )}
+      </FormControl>
 
-      <FormGroup>
-        <Label for="password_confirm">
-          <FormattedMessage id="PASSWORD_CON" />
-        </Label>
+      <FormControl fullWidth={true}>
+        <InputLabel
+          error={props.error && props.error.password_confirm ? true : false}
+          htmlFor="standard-adornment-password"
+        >
+          Password
+        </InputLabel>
         <Input
           type={showPassword ? 'text' : 'password'}
           value={props.user.password_confirm}
           onChange={props.handleChange}
           name="password_confirm"
-          invalid={props.error.password_confirm}
+          error={props.error && props.error.password_confirm ? true : false}
+          endAdornment={
+            <InputAdornment position="end">
+              <IconButton
+                onClick={() => {
+                  setShowPassword(!showPassword);
+                }}
+              >
+                {showPassword ? <Visibility /> : <VisibilityOff />}
+              </IconButton>
+            </InputAdornment>
+          }
         />
-        <FormFeedback>{props.error.password_confirm}</FormFeedback>
-      </FormGroup>
-      <FormGroup className="mt-3">
-        <Label check>
-          <Input
-            type="checkbox"
-            className="mr-10"
-            value={showPassword}
-            onClick={() => {
-              setShowPassword(!showPassword);
-            }}
-          />
-          <FormattedMessage id="SHOW_PASSWORD" />
-        </Label>
-      </FormGroup>
-      <FormGroup className="mt-3">
-        <Label check>
-          <Input
-            type="checkbox"
-            className="mr-10"
-            value={condition}
-            onClick={() => {
-              setCondition(!condition);
-            }}
-          />
-          <FormattedMessage id="AGGREE_TO" />
-        </Label>
-      </FormGroup>
-      <div className="both">
-        <Button
-          color="primary"
-          disabled={props.loader || !condition}
-          className="mt-3 pull-left"
-          onClick={props.saveUser}
-        >
-          <FormattedMessage id="SAVE" />
-        </Button>
-        {props.loader && <Loader />}
+        {props.error.password_confirm ? (
+          <FormHelperText
+            error={props.error && props.error.password_confirm ? true : false}
+          >
+            {intl.formatMessage({ id: `${props.error.password_confirm}` })}
+          </FormHelperText>
+        ) : (
+          <FormHelperText> </FormHelperText>
+        )}
+      </FormControl>
+      <div>
+        <p>
+          <InfoIcon />
+          {intl.formatMessage({ id: 'strong_passwor_info' })}
+        </p>
       </div>
+
+      {/* <div className="both">{props.loader && <Loader />}</div> */}
     </div>
   );
 };

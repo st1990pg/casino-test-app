@@ -1,46 +1,113 @@
 import React, { useState } from 'react';
 
-import FirstForm from 'Components/FirstFormComponent';
-import SecondForm from 'Components/SecondFormComponent';
-import { checkInputs, checkPassword } from 'Share/share';
+import FirstForm from '../components/FirstFormComponent';
+import SecondForm from '../components/SecondFormComponent';
+import { checkInputs, checkPassword } from '../share/share';
 
 import { Form } from 'reactstrap';
-import { registrationUser } from 'Services/registration.service';
-import ToastBottom from 'Components/ToastBottom';
-import { FormattedMessage } from 'react-intl';
+import { registrationUser } from '../services/registration.service';
+import { FormattedMessage, useIntl } from 'react-intl';
+
+import { makeStyles } from '@material-ui/core/styles';
+import Stepper from '@material-ui/core/Stepper';
+import Step from '@material-ui/core/Step';
+import StepLabel from '@material-ui/core/StepLabel';
+import StepContent from '@material-ui/core/StepContent';
+import Button from '@material-ui/core/Button';
+import Paper from '@material-ui/core/Paper';
+import Typography from '@material-ui/core/Typography';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
+import Checkbox from '@material-ui/core/Checkbox';
+import Snackbar from '@material-ui/core/Snackbar';
+import MuiAlert from '@material-ui/lab/Alert';
+import CircularProgress from '@material-ui/core/CircularProgress';
+
+function Alert(props) {
+  return <MuiAlert elevation={6} variant="filled" {...props} />;
+}
+
+const useStyles = makeStyles((theme) => ({
+  root: {
+    width: '100%',
+  },
+  button: {
+    marginTop: theme.spacing(1),
+    marginRight: theme.spacing(1),
+  },
+  actionsContainer: {
+    marginBottom: theme.spacing(2),
+  },
+  resetContainer: {
+    padding: theme.spacing(3),
+  },
+}));
 
 const RegistrationPage = (props) => {
   const [user, setUser] = useState({
-    fname: 'dsfewfrwfsdf',
-    lname: 'afsdfawfdsfasdf',
+    fname: '',
+    lname: '',
     username: '',
     password: '',
     password_confirm: '',
     email: '',
   });
   const [error, setError] = useState({});
-  const [step, setStep] = useState('first');
+  const intl = useIntl();
+  function getSteps() {
+    return [
+      intl.formatMessage({ id: 'enter_frst_and_last' }),
+      intl.formatMessage({ id: 'enter_other_inf' }),
+      intl.formatMessage({ id: 'AGGREE_TO' }),
+    ];
+  }
+  const [condition, setCondition] = useState(false);
   const [loader, setLoader] = useState(false);
-  const [toast, setToast] = useState({
-    display: false,
-    color: 'danger', //success
-    message: 'test',
-    info: 'test',
-  });
+  const classes = useStyles();
+  const [activeStep, setActiveStep] = React.useState(0);
+  const steps = getSteps();
+  const [toast, setToast] = useState(false);
 
-  let nextStep = (e) => {
+  const handleNext = (e) => {
     e.stopPropagation();
     e.preventDefault();
+    if (activeStep === 0) {
+      console.log(activeStep);
+      checkInputs({ fname: user.fname, lname: user.lname })
+        .then((res) => {
+          setError({});
+          setActiveStep((prevActiveStep) => prevActiveStep + 1);
+        })
+        .catch((error) => {
+          console.log(error);
+          setError(error);
+        });
+    } else {
+      checkInputs(user)
+        .then((res) => {
+          setError({});
+          setActiveStep((prevActiveStep) => prevActiveStep + 1);
+        })
+        .catch((error) => {
+          console.log(error);
+          setError(error);
+        });
+    }
+  };
 
-    checkInputs({ fname: user.fname, lname: user.lname })
-      .then((res) => {
-        setError({});
-        setStep('second');
-      })
-      .catch((error) => {
-        console.log(error);
-        setError(error);
-      });
+  const handleBack = () => {
+    setActiveStep((prevActiveStep) => prevActiveStep - 1);
+  };
+
+  const handleReset = () => {
+    setActiveStep(0);
+    setUser({
+      fname: '',
+      lname: '',
+      username: '',
+      password: '',
+      password_confirm: '',
+      email: '',
+    });
   };
 
   let saveUser = (e) => {
@@ -55,21 +122,11 @@ const RegistrationPage = (props) => {
         registrationUser(user)
           .then((res) => {
             setLoader(false);
-            setToast({
-              display: true,
-              color: 'success',
-              message: 'Your registration is a success!',
-              info: 'Congratulations',
-            });
+            setToast(true);
+            setActiveStep((prevActiveStep) => prevActiveStep + 1);
           })
           .catch((error) => {
             setLoader(false);
-            setToast({
-              display: true,
-              color: 'danger',
-              message: 'Your registration is a failed!',
-              info: 'Wrong',
-            });
           });
       })
       .catch((error) => {
@@ -88,30 +145,131 @@ const RegistrationPage = (props) => {
       setError({ ...error, password: err });
     }
   };
-  return (
-    <>
-      <div className="registration-form">
-        <h2>
-          <FormattedMessage id="REGISTRATION_PAGE" />
-        </h2>
-        <Form className={step}>
-          <FirstForm
-            nextStep={nextStep}
-            user={user}
-            error={error}
-            handleChange={handleChange}
-          />
+  function getStepContent(step) {
+    switch (step) {
+      case 0:
+        return (
+          <FirstForm user={user} error={error} handleChange={handleChange} />
+        );
+      case 1:
+        return (
           <SecondForm
-            saveUser={saveUser}
             user={user}
             error={error}
             handleChange={handleChange}
             loader={loader}
           />
-        </Form>
-      </div>
-      <ToastBottom toast={toast} />
-    </>
+        );
+      case 2:
+        return (
+          <>
+            <p>{intl.formatMessage({ id: 'AGGREE_TO_TEXT' })}</p>
+            <FormControlLabel
+              control={
+                <Checkbox
+                  value={condition}
+                  onClick={() => {
+                    setCondition(!condition);
+                  }}
+                  name="gilad"
+                />
+              }
+              label={intl.formatMessage({ id: 'AGGREE_TO' })}
+            />
+          </>
+        );
+      default:
+        return 'Unknown step';
+    }
+  }
+  return (
+    <div className={classes.root}>
+      <h2 className="sing-up">
+        <FormattedMessage id="SING_UP" />
+      </h2>
+      <p className="subtitle">
+        <FormattedMessage id="GET_BONUS" />
+      </p>
+      <Form>
+        <Stepper activeStep={activeStep} orientation="vertical">
+          {steps.map((label, index) => (
+            <Step key={label}>
+              <StepLabel>{label}</StepLabel>
+              <StepContent>
+                <Typography variant="inherit">
+                  {getStepContent(index)}
+                </Typography>
+                <div className="flex-center">
+                  <div>
+                    <Button
+                      disabled={activeStep === 0}
+                      onClick={handleBack}
+                      className={classes.button}
+                    >
+                      <FormattedMessage id="BACK" />
+                    </Button>
+                    {activeStep !== steps.length - 1 && (
+                      <Button
+                        variant="contained"
+                        color="primary"
+                        onClick={handleNext}
+                        className={classes.button}
+                      >
+                        <FormattedMessage id="NEXT" />
+                        {/* {activeStep === steps.length - 1 ? 'Finish' : 'Next'} */}
+                      </Button>
+                    )}
+                    {activeStep === steps.length - 1 && (
+                      <Button
+                        variant="contained"
+                        color="primary"
+                        disabled={!condition}
+                        onClick={saveUser}
+                        className={classes.button}
+                      >
+                        <FormattedMessage id="SAVE" />
+                        {/* {activeStep === steps.length - 1 ? 'Finish' : 'Next'} */}
+                      </Button>
+                    )}
+                    {loader ? <CircularProgress /> : ''}
+                  </div>
+                </div>
+              </StepContent>
+            </Step>
+          ))}
+        </Stepper>
+      </Form>
+      {activeStep === steps.length && (
+        <Paper square elevation={0} className={classes.resetContainer}>
+          <Typography>
+            <FormattedMessage id="COMPILTED_REGISTRATION" />
+          </Typography>
+          <Button onClick={handleReset} className={classes.button}>
+            <FormattedMessage id="RESET" />
+          </Button>
+        </Paper>
+      )}
+      <Snackbar
+        anchorOrigin={{
+          vertical: 'bottom',
+          horizontal: 'left',
+        }}
+        open={toast}
+        autoHideDuration={5000}
+        onClose={() => {
+          setToast(false);
+        }}
+      >
+        <Alert
+          onClose={() => {
+            setToast(false);
+          }}
+          severity="success"
+        >
+          {intl.formatMessage({ id: 'REGISTRATION_SUCC' })}
+        </Alert>
+      </Snackbar>
+    </div>
   );
 };
 
