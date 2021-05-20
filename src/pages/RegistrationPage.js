@@ -71,14 +71,12 @@ const RegistrationPage = (props) => {
     e.stopPropagation();
     e.preventDefault();
     if (activeStep === 0) {
-      console.log(activeStep);
       checkInputs({ fname: user.fname, lname: user.lname })
         .then((res) => {
           setError({});
           setActiveStep((prevActiveStep) => prevActiveStep + 1);
         })
         .catch((error) => {
-          console.log(error);
           setError(error);
         });
     } else {
@@ -88,7 +86,6 @@ const RegistrationPage = (props) => {
           setActiveStep((prevActiveStep) => prevActiveStep + 1);
         })
         .catch((error) => {
-          console.log(error);
           setError(error);
         });
     }
@@ -113,10 +110,9 @@ const RegistrationPage = (props) => {
   let saveUser = (e) => {
     e.stopPropagation();
     e.preventDefault();
-    console.log(user);
+
     checkInputs(user)
       .then((res) => {
-        console.log('succes');
         setError({});
         setLoader(true);
         registrationUser(user)
@@ -130,13 +126,11 @@ const RegistrationPage = (props) => {
           });
       })
       .catch((error) => {
-        console.log(error);
         setError(error);
       });
   };
 
   let handleChange = (e) => {
-    // console.log(e, e.target);
     setUser({ ...user, [e.target.name]: e.target.value });
 
     if (e.target.name === 'password') {

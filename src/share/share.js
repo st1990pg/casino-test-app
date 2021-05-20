@@ -61,7 +61,6 @@ export const checkInputs = async (obj) => {
     return error;
   }
 };
-//Object.entries(obj).forEach(([key, value]) => console.log(`${key}: ${value}`));
 
 export const checkPassword = (value) => {
   if (strongPassword.test(value)) {
