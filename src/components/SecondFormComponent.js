@@ -47,7 +47,10 @@ const SecondForm = (props) => {
           props.error.username
             ? intl.formatMessage(
                 { id: `${props.error.username.invalid_message}` },
-                { number: props.error.username.parameters.targetLength }
+                {
+                  name: intl.formatMessage({ id: 'USERNAME' }),
+                  number: props.error.username.parameters.targetLength,
+                }
               )
             : ' '
         }

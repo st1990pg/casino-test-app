@@ -89,3 +89,11 @@ body {
   font-size: 13px;
   font-weight: 500;
 }
+.second-form {
+  p {
+    .MuiSvgIcon-root {
+      top: -2px;
+      position: relative;
+    }
+  }
+}

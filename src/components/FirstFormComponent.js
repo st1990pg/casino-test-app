@@ -37,7 +37,10 @@ const FirstForm = (props) => {
           props.error.fname
             ? intl.formatMessage(
                 { id: `${props.error.fname.invalid_message}` },
-                { number: props.error.fname.parameters.targetLength }
+                {
+                  name: intl.formatMessage({ id: 'FRST_NAME' }),
+                  number: props.error.fname.parameters.targetLength,
+                }
               )
             : ' '
         }
@@ -56,7 +59,10 @@ const FirstForm = (props) => {
           props.error.lname
             ? intl.formatMessage(
                 { id: `${props.error.lname.invalid_message}` },
-                { number: props.error.lname.parameters.targetLength }
+                {
+                  name: intl.formatMessage({ id: 'LAST_NAME' }),
+                  number: props.error.lname.parameters.targetLength,
+                }
               )
             : ' '
         }
